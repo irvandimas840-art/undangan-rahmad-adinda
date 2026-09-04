@@ -9,27 +9,44 @@
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --cream:#FFFBF6;
+    --cream-top:#FFF6EF;
+    --cream-mid:#FDECE0;
+    --cream-bottom:#FFF9F4;
     --card:#FFFFFF;
-    --ink:#3A322C;
-    --muted:#8C7F73;
-    --rose:#C98BA3;
-    --rose-soft:#EBD3DC;
-    --sage:#8FA383;
-    --line:#EDE2D9;
+    --ink:#3A2E28;
+    --muted:#8C7062;
+    --rose:#C2678C;
+    --rose-soft:#F3D6E0;
+    --sage:#75915F;
+    --sage-soft:#E1EAD8;
+    --gold:#C9A227;
+    --line:#F0DCC9;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
   body{
-    background:var(--cream);
+    background:linear-gradient(180deg, var(--cream-top) 0%, var(--cream-mid) 45%, var(--cream-bottom) 100%);
     color:var(--ink);
     font-family:'Jost', sans-serif;
     font-weight:300;
     overflow-x:hidden;
+    position:relative;
   }
   .script{font-family:'Great Vibes', cursive; font-weight:400;}
   .serif{font-family:'Cormorant Garamond', serif;}
-  .wrap{max-width:480px; margin:0 auto; position:relative;}
+  .wrap{max-width:480px; margin:0 auto; position:relative; z-index:1;}
+
+  /* ---------- floating petals ---------- */
+  #petal-layer{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:2;}
+  .petal{
+    position:absolute; top:-40px; opacity:.75; will-change:transform;
+    animation-name:fall; animation-timing-function:linear; animation-iteration-count:infinite;
+  }
+  @keyframes fall{
+    0%{ transform:translateY(-10vh) translateX(0) rotate(0deg); }
+    50%{ transform:translateY(50vh) translateX(18px) rotate(180deg); }
+    100%{ transform:translateY(110vh) translateX(-14px) rotate(360deg); }
+  }
 
   /* ---------- floral ornament ---------- */
   .corner-ornament{position:absolute; width:88px; height:88px; opacity:.9; pointer-events:none;}
@@ -42,14 +59,21 @@
   /* ---------- cover ---------- */
   #cover-screen{
     position:fixed; inset:0; z-index:50;
-    background:var(--cream);
+    background:linear-gradient(180deg, var(--cream-top) 0%, var(--cream-mid) 100%);
     display:flex; align-items:center; justify-content:center;
     transition:transform .9s cubic-bezier(.65,0,.35,1), opacity .9s ease;
   }
   #cover-screen.opened{transform:translateY(-100%); opacity:0; pointer-events:none;}
   .cover-inner{text-align:center; padding:40px; display:flex; flex-direction:column; align-items:center; gap:20px;}
   .eyebrow{font-size:12px; letter-spacing:.14em; color:var(--muted); font-weight:400;}
-  .cover-couple-script{font-size:32px; color:var(--rose);}
+  .cover-couple-script{
+    font-size:34px; color:var(--rose);
+    animation:breathe 3.2s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{ opacity:.82; transform:scale(1); }
+    50%{ opacity:1; transform:scale(1.035); }
+  }
   .guest-name{
     font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:500;
     font-size:24px; color:var(--ink); line-height:1.3; max-width:280px;
@@ -58,19 +82,23 @@
     margin-top:6px; border:1px solid var(--rose); background:transparent; color:var(--rose);
     font-family:'Jost', sans-serif; font-size:13px; letter-spacing:.06em;
     padding:13px 34px; border-radius:999px; cursor:pointer;
-    transition:background .3s ease, color .3s ease;
+    transition:background .3s ease, color .3s ease, transform .25s ease, box-shadow .25s ease;
   }
-  .open-btn:hover{background:var(--rose); color:#fff;}
+  .open-btn:hover{background:var(--rose); color:#fff; transform:translateY(-2px); box-shadow:0 10px 24px rgba(194,103,140,.35);}
   .open-btn:focus-visible{outline:2px solid var(--rose); outline-offset:3px;}
 
   /* ---------- sections ---------- */
   section{padding:80px 32px; text-align:center; position:relative; border-bottom:1px solid var(--line);}
+  section:nth-of-type(even){background:rgba(255,255,255,.45);}
   section:last-of-type{border-bottom:none;}
+
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .8s ease, transform .8s ease;}
+  .reveal.in-view{opacity:1; transform:translateY(0);}
 
   /* ==== FOTO PASANGAN — taruh foto di sini ==== */
   .couple-photo{
     width:220px; height:220px; border-radius:50%; object-fit:cover;
-    border:6px solid #fff; box-shadow:0 8px 30px rgba(0,0,0,.08);
+    border:6px solid #fff; box-shadow:0 12px 34px rgba(194,103,140,.22);
     margin:0 auto 28px;
   }
   .photo-placeholder{
@@ -83,21 +111,29 @@
     font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:400;
     font-size:17px; line-height:1.75; color:var(--muted); max-width:340px; margin:0 auto;
   }
-  .quote-source{display:block; margin-top:14px; font-size:12px; letter-spacing:.08em; color:var(--rose);}
+  .quote-source{display:block; margin-top:14px; font-size:12px; letter-spacing:.08em; color:var(--gold);}
 
   .hero-names{font-family:'Great Vibes', cursive; font-size:54px; line-height:1.2; color:var(--ink); margin:14px 0 6px;}
   .hero-date{font-size:14px; letter-spacing:.1em; color:var(--muted); margin-bottom:30px;}
-  hr.divider{border:none; height:1px; width:56px; background:var(--rose-soft); margin:32px auto;}
+  hr.divider{border:none; height:1px; width:56px; background:var(--gold); opacity:.55; margin:32px auto;}
 
   .savedate-btn{
     display:inline-block; margin-top:20px; font-size:12px; letter-spacing:.05em; color:#fff;
     background:var(--sage); text-decoration:none; padding:12px 26px; border-radius:999px;
+    transition:transform .25s ease, box-shadow .25s ease;
   }
+  .savedate-btn:hover{transform:translateY(-2px); box-shadow:0 10px 22px rgba(117,145,95,.35);}
 
   /* ---------- countdown ---------- */
   .countdown{display:flex; justify-content:center; gap:22px; margin-top:8px;}
   .cd-unit{display:flex; flex-direction:column; align-items:center; gap:6px;}
-  .cd-num{font-family:'Cormorant Garamond', serif; font-weight:600; font-size:30px; color:var(--rose); min-width:48px;}
+  .cd-num{font-family:'Cormorant Garamond', serif; font-weight:600; font-size:32px; color:var(--rose); min-width:48px; transition:transform .18s ease;}
+  .cd-num.pulse{animation:pulse .5s ease;}
+  @keyframes pulse{
+    0%{ transform:scale(1); color:var(--rose); }
+    35%{ transform:scale(1.28); color:var(--gold); }
+    100%{ transform:scale(1); color:var(--rose); }
+  }
   .cd-label{font-size:11px; letter-spacing:.08em; color:var(--muted);}
 
   /* ---------- events ---------- */
@@ -106,15 +142,17 @@
   .event-title{font-family:'Cormorant Garamond', serif; font-style:italic; font-size:24px; margin-bottom:16px; color:var(--ink);}
   .event-detail{font-size:14px; line-height:1.9; color:var(--muted);}
   .event-detail strong{color:var(--ink); font-weight:500;}
-  .map-btn{display:inline-block; margin-top:16px; font-size:12px; letter-spacing:.05em; color:var(--rose); text-decoration:none; border-bottom:1px solid var(--rose-soft); padding-bottom:2px;}
+  .map-btn{display:inline-block; margin-top:16px; font-size:12px; letter-spacing:.05em; color:var(--rose); text-decoration:none; border-bottom:1px solid var(--rose-soft); padding-bottom:2px; transition:color .2s ease, border-color .2s ease;}
+  .map-btn:hover{color:var(--gold); border-color:var(--gold);}
 
   /* ---------- gift ---------- */
   .gift-intro{font-size:14px; line-height:1.8; color:var(--muted); max-width:320px; margin:0 auto 30px;}
-  .bank-card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px 24px; max-width:320px; margin:0 auto 16px; display:flex; flex-direction:column; gap:4px; align-items:flex-start; text-align:left;}
+  .bank-card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px 24px; max-width:320px; margin:0 auto 16px; display:flex; flex-direction:column; gap:4px; align-items:flex-start; text-align:left; transition:transform .25s ease, box-shadow .25s ease;}
+  .bank-card:hover{transform:translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,.06);}
   .bank-name{font-size:12px; letter-spacing:.06em; color:var(--rose);}
   .bank-number{font-family:'Cormorant Garamond', serif; font-size:20px; margin:4px 0;}
   .bank-holder{font-size:13px; color:var(--muted); margin-bottom:12px;}
-  .copy-btn{align-self:flex-start; font-size:11px; letter-spacing:.06em; color:var(--ink); background:var(--cream); border:1px solid var(--line); padding:8px 16px; border-radius:999px; cursor:pointer;}
+  .copy-btn{align-self:flex-start; font-size:11px; letter-spacing:.06em; color:var(--ink); background:var(--cream-top); border:1px solid var(--line); padding:8px 16px; border-radius:999px; cursor:pointer; transition:border-color .2s ease, color .2s ease;}
   .copy-btn:hover{border-color:var(--rose); color:var(--rose);}
   .copy-btn.copied{background:var(--rose); color:#fff; border-color:var(--rose);}
 
@@ -122,9 +160,16 @@
   .closing-text{font-size:14px; line-height:1.9; color:var(--muted); max-width:320px; margin:0 auto 26px;}
   .closing-names{font-family:'Great Vibes', cursive; font-size:38px; color:var(--ink);}
 
-  footer{padding:34px 32px 44px; text-align:center; font-size:11px; color:var(--muted); letter-spacing:.04em;}
+  footer{padding:34px 32px 44px; text-align:center; font-size:11px; color:var(--muted); letter-spacing:.04em; position:relative; z-index:1;}
 
-  @media (prefers-reduced-motion: reduce){#cover-screen{transition:none;} html{scroll-behavior:auto;}}
+  @media (prefers-reduced-motion: reduce){
+    #cover-screen{transition:none;}
+    html{scroll-behavior:auto;}
+    .petal{animation:none; display:none;}
+    .cover-couple-script{animation:none;}
+    .reveal{opacity:1; transform:none; transition:none;}
+    .cd-num.pulse{animation:none;}
+  }
 </style>
 </head>
 <body>
@@ -160,15 +205,17 @@
     closingMessage: "Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
     createdBy: "Dibuat dengan \u2665 oleh Dims",
     // ==== BACKSOUND -- ganti dengan URL file mp3 kamu ====
-    musicUrl: "music.mp3" // contoh: "https://namadomainkamu.com/music/lagu.mp3"
+    musicUrl: "music.mp3"
   };
 </script>
 
+<div id="petal-layer"></div>
+
 <div id="cover-screen">
-  <div class="corner-ornament tl"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#8FA383" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C98BA3"/><circle cx="4" cy="26" r="3" fill="#8FA383"/><circle cx="26" cy="4" r="3" fill="#8FA383"/></svg></div>
-  <div class="corner-ornament tr"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#8FA383" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C98BA3"/><circle cx="4" cy="26" r="3" fill="#8FA383"/><circle cx="26" cy="4" r="3" fill="#8FA383"/></svg></div>
-  <div class="corner-ornament bl"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#8FA383" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C98BA3"/><circle cx="4" cy="26" r="3" fill="#8FA383"/><circle cx="26" cy="4" r="3" fill="#8FA383"/></svg></div>
-  <div class="corner-ornament br"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#8FA383" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C98BA3"/><circle cx="4" cy="26" r="3" fill="#8FA383"/><circle cx="26" cy="4" r="3" fill="#8FA383"/></svg></div>
+  <div class="corner-ornament tl"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#75915F" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C2678C"/><circle cx="4" cy="26" r="3" fill="#75915F"/><circle cx="26" cy="4" r="3" fill="#75915F"/></svg></div>
+  <div class="corner-ornament tr"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#75915F" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C2678C"/><circle cx="4" cy="26" r="3" fill="#75915F"/><circle cx="26" cy="4" r="3" fill="#75915F"/></svg></div>
+  <div class="corner-ornament bl"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#75915F" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C2678C"/><circle cx="4" cy="26" r="3" fill="#75915F"/><circle cx="26" cy="4" r="3" fill="#75915F"/></svg></div>
+  <div class="corner-ornament br"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#75915F" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C2678C"/><circle cx="4" cy="26" r="3" fill="#75915F"/><circle cx="26" cy="4" r="3" fill="#75915F"/></svg></div>
   <div class="cover-inner">
     <div class="eyebrow">Undangan Pernikahan</div>
     <div class="cover-couple-script script" id="cover-couple"></div>
@@ -182,7 +229,7 @@
 
 <div class="wrap" id="content">
 
-  <section id="hero">
+  <section id="hero" class="reveal">
     <!-- ==== FOTO PASANGAN: ganti src di bawah, atau hapus <img> ini dan pakai .photo-placeholder ==== -->
     <img class="couple-photo" src="image.png" alt="Foto Rahmad & Adinda" onerror="this.outerHTML='<div class=&quot;photo-placeholder&quot;>Taruh foto pasangan di sini (ganti src img .couple-photo)</div>'">
     <div class="eyebrow">The Wedding Of</div>
@@ -192,7 +239,7 @@
     <span class="quote-source" id="verse-source"></span>
   </section>
 
-  <section id="countdown-section">
+  <section id="countdown-section" class="reveal">
     <div class="eyebrow" style="margin-bottom:22px;">Menuju Hari Bahagia</div>
     <div class="countdown">
       <div class="cd-unit"><span class="cd-num" id="cd-days">00</span><span class="cd-label">Hari</span></div>
@@ -203,7 +250,7 @@
     <a class="savedate-btn" id="savedate-btn" href="#" target="_blank" rel="noopener">Save The Date</a>
   </section>
 
-  <section id="events">
+  <section id="events" class="reveal">
     <div class="event-card">
       <div class="event-title">Akad Nikah</div>
       <div class="event-detail"><strong id="akad-time"></strong><br><span id="akad-place"></span></div>
@@ -217,13 +264,13 @@
     </div>
   </section>
 
-  <section id="gift">
+  <section id="gift" class="reveal">
     <div class="eyebrow" style="margin-bottom:18px;">Tanda Kasih</div>
     <p class="gift-intro">Bagi Bapak/Ibu/Saudara/i yang ingin memberikan hadiah, dapat melalui rekening berikut.</p>
     <div id="bank-list"></div>
   </section>
 
-  <section id="closing">
+  <section id="closing" class="reveal">
     <p class="closing-text" id="closing-message"></p>
     <div class="closing-names" id="closing-couple"></div>
   </section>
@@ -288,20 +335,64 @@
     });
   });
 
+  // ---------- countdown dengan efek pulse tiap angka berubah ----------
   const targetDate = new Date(CONFIG.eventDate).getTime();
+  let prevValues = {d:null,h:null,m:null,s:null};
+  function setPulse(el, newVal, key){
+    if (prevValues[key] !== null && prevValues[key] !== newVal) {
+      el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');
+    }
+    prevValues[key] = newVal;
+    el.textContent = String(newVal).padStart(2,'0');
+  }
   function updateCountdown(){
     const diff = Math.max(0, targetDate - Date.now());
     const d = Math.floor(diff / 86400000);
     const h = Math.floor((diff % 86400000) / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
     const s = Math.floor((diff % 60000) / 1000);
-    document.getElementById('cd-days').textContent = String(d).padStart(2,'0');
-    document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
-    document.getElementById('cd-mins').textContent = String(m).padStart(2,'0');
-    document.getElementById('cd-secs').textContent = String(s).padStart(2,'0');
+    setPulse(document.getElementById('cd-days'), d, 'd');
+    setPulse(document.getElementById('cd-hours'), h, 'h');
+    setPulse(document.getElementById('cd-mins'), m, 'm');
+    setPulse(document.getElementById('cd-secs'), s, 's');
   }
   updateCountdown();
   setInterval(updateCountdown, 1000);
+
+  // ---------- kelopak bunga melayang ----------
+  (function(){
+    const layer = document.getElementById('petal-layer');
+    const colors = ['#C2678C', '#C9A227', '#75915F'];
+    const count = window.innerWidth < 500 ? 10 : 16;
+    for (let i = 0; i < count; i++){
+      const p = document.createElement('div');
+      p.className = 'petal';
+      const size = 6 + Math.random()*7;
+      p.style.left = Math.random()*100 + 'vw';
+      p.style.width = size + 'px';
+      p.style.height = size*1.3 + 'px';
+      p.style.background = colors[i % colors.length];
+      p.style.borderRadius = '0 60% 0 60%';
+      p.style.animationDuration = (10 + Math.random()*10) + 's';
+      p.style.animationDelay = (Math.random()*10) + 's';
+      layer.appendChild(p);
+    }
+  })();
+
+  // ---------- reveal on scroll ----------
+  (function(){
+    const targets = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) { targets.forEach(t => t.classList.add('in-view')); return; }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: .2 });
+    targets.forEach(t => io.observe(t));
+  })();
 
   // ==== BACKSOUND: musik diputar begitu tamu klik "Buka Undangan" ====
   document.getElementById('open-btn').addEventListener('click', () => {
