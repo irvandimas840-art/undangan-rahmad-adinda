@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Undangan Pernikahan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFFBF6;
+    --card:#FFFFFF;
+    --ink:#3A322C;
+    --muted:#8C7F73;
+    --rose:#C98BA3;
+    --rose-soft:#EBD3DC;
+    --sage:#8FA383;
+    --line:#EDE2D9;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Jost', sans-serif;
+    font-weight:300;
+    overflow-x:hidden;
+  }
+  .script{font-family:'Great Vibes', cursive; font-weight:400;}
+  .serif{font-family:'Cormorant Garamond', serif;}
+  .wrap{max-width:480px; margin:0 auto; position:relative;}
+
+  /* ---------- floral ornament ---------- */
+  .corner-ornament{position:absolute; width:88px; height:88px; opacity:.9; pointer-events:none;}
+  .corner-ornament svg{width:100%; height:100%;}
+  .tl{top:14px; left:14px;}
+  .tr{top:14px; right:14px; transform:scaleX(-1);}
+  .bl{bottom:14px; left:14px; transform:scaleY(-1);}
+  .br{bottom:14px; right:14px; transform:scale(-1,-1);}
+
+  /* ---------- cover ---------- */
+  #cover-screen{
+    position:fixed; inset:0; z-index:50;
+    background:var(--cream);
+    display:flex; align-items:center; justify-content:center;
+    transition:transform .9s cubic-bezier(.65,0,.35,1), opacity .9s ease;
+  }
+  #cover-screen.opened{transform:translateY(-100%); opacity:0; pointer-events:none;}
+  .cover-inner{text-align:center; padding:40px; display:flex; flex-direction:column; align-items:center; gap:20px;}
+  .eyebrow{font-size:12px; letter-spacing:.14em; color:var(--muted); font-weight:400;}
+  .cover-couple-script{font-size:32px; color:var(--rose);}
+  .guest-name{
+    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:500;
+    font-size:24px; color:var(--ink); line-height:1.3; max-width:280px;
+  }
+  .open-btn{
+    margin-top:6px; border:1px solid var(--rose); background:transparent; color:var(--rose);
+    font-family:'Jost', sans-serif; font-size:13px; letter-spacing:.06em;
+    padding:13px 34px; border-radius:999px; cursor:pointer;
+    transition:background .3s ease, color .3s ease;
+  }
+  .open-btn:hover{background:var(--rose); color:#fff;}
+  .open-btn:focus-visible{outline:2px solid var(--rose); outline-offset:3px;}
+
+  /* ---------- sections ---------- */
+  section{padding:80px 32px; text-align:center; position:relative; border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+
+  /* ==== FOTO PASANGAN — taruh foto di sini ==== */
+  .couple-photo{
+    width:220px; height:220px; border-radius:50%; object-fit:cover;
+    border:6px solid #fff; box-shadow:0 8px 30px rgba(0,0,0,.08);
+    margin:0 auto 28px;
+  }
+  .photo-placeholder{
+    width:220px; height:220px; border-radius:50%; margin:0 auto 28px;
+    background:var(--rose-soft); display:flex; align-items:center; justify-content:center;
+    color:var(--rose); font-size:12px; letter-spacing:.04em; text-align:center; padding:16px;
+  }
+
+  .quote-verse{
+    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:400;
+    font-size:17px; line-height:1.75; color:var(--muted); max-width:340px; margin:0 auto;
+  }
+  .quote-source{display:block; margin-top:14px; font-size:12px; letter-spacing:.08em; color:var(--rose);}
+
+  .hero-names{font-family:'Great Vibes', cursive; font-size:54px; line-height:1.2; color:var(--ink); margin:14px 0 6px;}
+  .hero-date{font-size:14px; letter-spacing:.1em; color:var(--muted); margin-bottom:30px;}
+  hr.divider{border:none; height:1px; width:56px; background:var(--rose-soft); margin:32px auto;}
+
+  .savedate-btn{
+    display:inline-block; margin-top:20px; font-size:12px; letter-spacing:.05em; color:#fff;
+    background:var(--sage); text-decoration:none; padding:12px 26px; border-radius:999px;
+  }
+
+  /* ---------- countdown ---------- */
+  .countdown{display:flex; justify-content:center; gap:22px; margin-top:8px;}
+  .cd-unit{display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .cd-num{font-family:'Cormorant Garamond', serif; font-weight:600; font-size:30px; color:var(--rose); min-width:48px;}
+  .cd-label{font-size:11px; letter-spacing:.08em; color:var(--muted);}
+
+  /* ---------- events ---------- */
+  .event-card{max-width:340px; margin:0 auto 36px;}
+  .event-card:last-child{margin-bottom:0;}
+  .event-title{font-family:'Cormorant Garamond', serif; font-style:italic; font-size:24px; margin-bottom:16px; color:var(--ink);}
+  .event-detail{font-size:14px; line-height:1.9; color:var(--muted);}
+  .event-detail strong{color:var(--ink); font-weight:500;}
+  .map-btn{display:inline-block; margin-top:16px; font-size:12px; letter-spacing:.05em; color:var(--rose); text-decoration:none; border-bottom:1px solid var(--rose-soft); padding-bottom:2px;}
+
+  /* ---------- gift ---------- */
+  .gift-intro{font-size:14px; line-height:1.8; color:var(--muted); max-width:320px; margin:0 auto 30px;}
+  .bank-card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px 24px; max-width:320px; margin:0 auto 16px; display:flex; flex-direction:column; gap:4px; align-items:flex-start; text-align:left;}
+  .bank-name{font-size:12px; letter-spacing:.06em; color:var(--rose);}
+  .bank-number{font-family:'Cormorant Garamond', serif; font-size:20px; margin:4px 0;}
+  .bank-holder{font-size:13px; color:var(--muted); margin-bottom:12px;}
+  .copy-btn{align-self:flex-start; font-size:11px; letter-spacing:.06em; color:var(--ink); background:var(--cream); border:1px solid var(--line); padding:8px 16px; border-radius:999px; cursor:pointer;}
+  .copy-btn:hover{border-color:var(--rose); color:var(--rose);}
+  .copy-btn.copied{background:var(--rose); color:#fff; border-color:var(--rose);}
+
+  /* ---------- closing ---------- */
+  .closing-text{font-size:14px; line-height:1.9; color:var(--muted); max-width:320px; margin:0 auto 26px;}
+  .closing-names{font-family:'Great Vibes', cursive; font-size:38px; color:var(--ink);}
+
+  footer{padding:34px 32px 44px; text-align:center; font-size:11px; color:var(--muted); letter-spacing:.04em;}
+
+  @media (prefers-reduced-motion: reduce){#cover-screen{transition:none;} html{scroll-behavior:auto;}}
+</style>
+</head>
+<body>
+
+<!-- ======================================================
+     GANTI DATA DI SINI untuk setiap klien
+     ====================================================== -->
+<script>
+  const CONFIG = {
+    groom: "Rahmad Saputra",
+    bride: "Adinda Tri Nofia",
+    coupleOrder: "Rahmad & Adinda",
+    // Format ISO dengan offset +07:00 (WIB). GANTI JAM SESUAI JAM ACARA SEBENARNYA.
+    eventDate: "2026-09-11T08:00:00+07:00",
+    dateDisplay: "11 . 09 . 2026",
+    verse: "\u201CDan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan untukmu pasangan dari jenismu sendiri, supaya kamu merasa tenteram kepadanya, dan dijadikan-Nya di antaramu rasa kasih dan sayang.\u201D",
+    verseSource: "QS. Ar-Rum: 21",
+    // satu lokasi dipakai untuk akad & resepsi -- pisahkan jika beda tempat/jam
+    akad: {
+      time: "Waktu menyusul", // GANTI
+      place: "Jorong Sikaladi, Nagari Lalan, Kec. Lubuk Tarok, Kab. Sijunjung",
+      mapsUrl: "https://maps.app.goo.gl/"
+    },
+    resepsi: {
+      time: "Waktu menyusul", // GANTI
+      place: "Jorong Sikaladi, Nagari Lalan, Kec. Lubuk Tarok, Kab. Sijunjung",
+      mapsUrl: "https://maps.app.goo.gl/"
+    },
+    gifts: [
+      { bank: "Bank BCA", number: "1234567890", holder: "Adinda Tri Nofia" },
+      { bank: "Bank Mandiri", number: "0987654321", holder: "Rahmad Saputra" }
+    ],
+    closingMessage: "Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+    createdBy: "Dibuat dengan \u2665 oleh Dims",
+    // ==== BACKSOUND -- ganti dengan URL file mp3 kamu ====
+    musicUrl: "" // contoh: "https://namadomainkamu.com/music/lagu.mp3"
+  };
+</script>
+
+<div id="cover-screen">
+  <div class="corner-ornament tl"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#8FA383" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C98BA3"/><circle cx="4" cy="26" r="3" fill="#8FA383"/><circle cx="26" cy="4" r="3" fill="#8FA383"/></svg></div>
+  <div class="corner-ornament tr"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#8FA383" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C98BA3"/><circle cx="4" cy="26" r="3" fill="#8FA383"/><circle cx="26" cy="4" r="3" fill="#8FA383"/></svg></div>
+  <div class="corner-ornament bl"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#8FA383" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C98BA3"/><circle cx="4" cy="26" r="3" fill="#8FA383"/><circle cx="26" cy="4" r="3" fill="#8FA383"/></svg></div>
+  <div class="corner-ornament br"><svg viewBox="0 0 88 88"><path d="M4 4 C 4 40, 40 84, 84 84" stroke="#8FA383" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="5" fill="#C98BA3"/><circle cx="4" cy="26" r="3" fill="#8FA383"/><circle cx="26" cy="4" r="3" fill="#8FA383"/></svg></div>
+  <div class="cover-inner">
+    <div class="eyebrow">Undangan Pernikahan</div>
+    <div class="cover-couple-script script" id="cover-couple"></div>
+    <div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">Kepada Yth.</div>
+      <div class="guest-name" id="guest-name">Bapak/Ibu/Saudara/i</div>
+    </div>
+    <button class="open-btn" id="open-btn">Buka Undangan</button>
+  </div>
+</div>
+
+<div class="wrap" id="content">
+
+  <section id="hero">
+    <!-- ==== FOTO PASANGAN: ganti src di bawah, atau hapus <img> ini dan pakai .photo-placeholder ==== -->
+    <img class="couple-photo" src="GANTI_DENGAN_URL_FOTO.jpg" alt="Foto Rahmad & Adinda" onerror="this.outerHTML='<div class=&quot;photo-placeholder&quot;>Taruh foto pasangan di sini (ganti src img .couple-photo)</div>'">
+    <div class="eyebrow">The Wedding Of</div>
+    <div class="hero-names script" id="hero-couple"></div>
+    <div class="hero-date" id="hero-date"></div>
+    <p class="quote-verse" id="verse-text"></p>
+    <span class="quote-source" id="verse-source"></span>
+  </section>
+
+  <section id="countdown-section">
+    <div class="eyebrow" style="margin-bottom:22px;">Menuju Hari Bahagia</div>
+    <div class="countdown">
+      <div class="cd-unit"><span class="cd-num" id="cd-days">00</span><span class="cd-label">Hari</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-hours">00</span><span class="cd-label">Jam</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-mins">00</span><span class="cd-label">Menit</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cd-secs">00</span><span class="cd-label">Detik</span></div>
+    </div>
+    <a class="savedate-btn" id="savedate-btn" href="#" target="_blank" rel="noopener">Save The Date</a>
+  </section>
+
+  <section id="events">
+    <div class="event-card">
+      <div class="event-title">Akad Nikah</div>
+      <div class="event-detail"><strong id="akad-time"></strong><br><span id="akad-place"></span></div>
+      <a class="map-btn" id="akad-map" href="#" target="_blank" rel="noopener">Lihat Lokasi →</a>
+    </div>
+    <hr class="divider">
+    <div class="event-card">
+      <div class="event-title">Resepsi</div>
+      <div class="event-detail"><strong id="resepsi-time"></strong><br><span id="resepsi-place"></span></div>
+      <a class="map-btn" id="resepsi-map" href="#" target="_blank" rel="noopener">Lihat Lokasi →</a>
+    </div>
+  </section>
+
+  <section id="gift">
+    <div class="eyebrow" style="margin-bottom:18px;">Tanda Kasih</div>
+    <p class="gift-intro">Bagi Bapak/Ibu/Saudara/i yang ingin memberikan hadiah, dapat melalui rekening berikut.</p>
+    <div id="bank-list"></div>
+  </section>
+
+  <section id="closing">
+    <p class="closing-text" id="closing-message"></p>
+    <div class="closing-names" id="closing-couple"></div>
+  </section>
+
+  <footer id="footer"></footer>
+
+</div>
+
+<audio id="bg-music" loop preload="none"></audio>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const guest = params.get('to');
+  if (guest) document.getElementById('guest-name').textContent = decodeURIComponent(guest.replace(/\+/g,' '));
+
+  document.getElementById('cover-couple').textContent = CONFIG.coupleOrder;
+  document.getElementById('hero-couple').textContent = CONFIG.coupleOrder;
+  document.getElementById('hero-date').textContent = CONFIG.dateDisplay;
+  document.getElementById('verse-text').textContent = CONFIG.verse;
+  document.getElementById('verse-source').textContent = CONFIG.verseSource;
+
+  document.getElementById('akad-time').textContent = CONFIG.akad.time;
+  document.getElementById('akad-place').textContent = CONFIG.akad.place;
+  document.getElementById('akad-map').href = CONFIG.akad.mapsUrl;
+
+  document.getElementById('resepsi-time').textContent = CONFIG.resepsi.time;
+  document.getElementById('resepsi-place').textContent = CONFIG.resepsi.place;
+  document.getElementById('resepsi-map').href = CONFIG.resepsi.mapsUrl;
+
+  document.getElementById('closing-message').textContent = CONFIG.closingMessage;
+  document.getElementById('closing-couple').textContent = CONFIG.coupleOrder;
+  document.getElementById('footer').textContent = CONFIG.createdBy;
+
+  // Save the date -> Google Calendar link, dibangun otomatis dari eventDate
+  (function(){
+    const start = new Date(CONFIG.eventDate);
+    const end = new Date(start.getTime() + 2*60*60*1000);
+    const fmt = d => d.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+    const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(CONFIG.coupleOrder)}&dates=${fmt(start)}/${fmt(end)}&location=${encodeURIComponent(CONFIG.akad.place)}`;
+    document.getElementById('savedate-btn').href = url;
+  })();
+
+  const bankList = document.getElementById('bank-list');
+  CONFIG.gifts.forEach((g) => {
+    const card = document.createElement('div');
+    card.className = 'bank-card';
+    card.innerHTML = `
+      <span class="bank-name">${g.bank}</span>
+      <span class="bank-number">${g.number}</span>
+      <span class="bank-holder">a.n. ${g.holder}</span>
+      <button class="copy-btn" data-num="${g.number}">Salin Nomor</button>
+    `;
+    bankList.appendChild(card);
+  });
+  bankList.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('copy-btn')) return;
+    const num = e.target.getAttribute('data-num');
+    navigator.clipboard.writeText(num).then(() => {
+      e.target.textContent = 'Tersalin ✓';
+      e.target.classList.add('copied');
+      setTimeout(() => { e.target.textContent = 'Salin Nomor'; e.target.classList.remove('copied'); }, 1800);
+    });
+  });
+
+  const targetDate = new Date(CONFIG.eventDate).getTime();
+  function updateCountdown(){
+    const diff = Math.max(0, targetDate - Date.now());
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cd-days').textContent = String(d).padStart(2,'0');
+    document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-mins').textContent = String(m).padStart(2,'0');
+    document.getElementById('cd-secs').textContent = String(s).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ==== BACKSOUND: musik diputar begitu tamu klik "Buka Undangan" ====
+  document.getElementById('open-btn').addEventListener('click', () => {
+    document.getElementById('cover-screen').classList.add('opened');
+    document.body.style.overflow = 'auto';
+    if (CONFIG.musicUrl) {
+      const audio = document.getElementById('bg-music');
+      audio.src = CONFIG.musicUrl;
+      audio.volume = 0.6;
+      audio.play().catch(() => {});
+    }
+  });
+  document.body.style.overflow = 'hidden';
+</script>
+
+</body>
+</html>
