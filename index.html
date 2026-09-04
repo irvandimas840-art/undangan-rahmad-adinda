@@ -181,6 +181,27 @@
   #music-toggle.show{display:flex}
   #music-toggle.muted{opacity:.65}
 
+  /* ---------- ucapan & doa ---------- */
+  .comment-form{max-width:340px;margin:0 auto 34px;display:flex;flex-direction:column;gap:12px;text-align:left}
+  .comment-form input,.comment-form select,.comment-form textarea{
+    border:1px solid rgba(212,173,91,.55);background:rgba(255,252,243,.9);
+    padding:11px 13px;font-family:'Jost',sans-serif;font-size:13px;color:var(--black);
+  }
+  .comment-form textarea{min-height:80px;resize:vertical}
+  .comment-submit{
+    align-self:flex-start;background:linear-gradient(180deg,#E2C171,#C79A40);color:#4A1520;
+    border:none;padding:11px 26px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    cursor:pointer;border-radius:2px;transition:.2s ease;
+  }
+  .comment-submit:hover{transform:translateY(-2px)}
+  .comment-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+  .comment-list{max-width:340px;margin:0 auto;display:flex;flex-direction:column;gap:14px;text-align:left;max-height:380px;overflow-y:auto}
+  .comment-item{border:1px solid rgba(212,173,91,.3);background:rgba(255,255,255,.05);padding:14px 16px}
+  .comment-item .c-name{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.06em;color:var(--gold-pale)}
+  .comment-item .c-status{font-size:10px;color:#B79A7A;margin-left:6px}
+  .comment-item .c-msg{font-size:13px;line-height:1.6;color:#EFE2CE;margin-top:5px}
+  .comment-empty{font-size:12px;color:#B79A7A;text-align:center}
+
   @media(max-width:380px){
     section{padding-left:22px;padding-right:22px}.cover-frame{min-height:580px;padding-left:22px;padding-right:22px}.cover-couple-script{font-size:43px}.hero-names{font-size:49px}.countdown{gap:6px}.cd-num{font-size:27px}.cd-label{font-size:8px}
   }
@@ -203,7 +224,7 @@
     akad: {
       time: "08.00 WIB-Selesai",
       place: "Jorong Sikaladi, Nagari Lalan, Kec. Lubuk Tarok, Kab. Sijunjung",
-      mapsUrl: "https://www.google.com/maps/place/SDN+5+SIKALADI/@-0.7687201,100.9451265,19.71z/data=!4m6!3m5!1s0x2e2b3dcd75a8678b:0xfb3fef85ebd5d22b!8m2!3d-0.7688871!4d100.9454757!16s%2Fg%2F11hfb7r5q7?entry=ttu&g_ep=EgoyMDI2MDkwMS4wIKXMDSoASAFQAw%3D%3D/"
+      mapsUrl: "https://www.google.com/maps/place/SDN+5+SIKALADI/@-0.7687201,100.9451265,19.71z/data=!4m6!3m5!1s0x2e2b3dcd75a8678b:0xfb3fef85ebd5d22b!8m2!3d-0.7688871!4d100.9454757!16s%2Fg%2F11hfb7r5q7?entry=ttu&g_ep=EgoyMDI2MDkwMS4wIKXMDSoASAFQAw%3D%3D"
     },
     resepsi: {
       time: "10.00 WIB-Selesai",
@@ -216,7 +237,16 @@
     ],
     closingMessage: "Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
     createdBy: "Desaign By Irvana Dims",
-    musicUrl: "music.mp3"
+    musicUrl: "music.mp3",
+    // ==== CONFIG FIREBASE ====
+    // CEK LAGI databaseURL ini ke Firebase console setelah Realtime Database dibuat —
+    // pastikan persis sama (tergantung region server yang kamu pilih).
+    firebaseConfig: {
+      apiKey: "AIzaSyBAuPRxlyRw72yvAlLKRe1QhSzgiB02HMM",
+      authDomain: "comment-cd904.firebaseapp.com",
+      databaseURL: "https://comment-cd904-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "comment-cd904",
+    }
   };
 </script>
 
@@ -353,6 +383,28 @@
     </div>
   </section>
 
+  <section id="comments" class="dark reveal">
+    <div class="section-inner">
+      <div class="eyebrow">Ucapan & Doa</div>
+      <div class="section-title" style="margin-top:8px">Kirim Doa Restu</div>
+      <div class="minang-divider"><span></span></div>
+
+      <form class="comment-form" id="comment-form">
+        <input type="text" id="c-name" placeholder="Nama kamu" required maxlength="60">
+        <select id="c-status">
+          <option value="Hadir">Insya Allah Hadir</option>
+          <option value="Tidak Hadir">Belum Bisa Hadir</option>
+        </select>
+        <textarea id="c-message" placeholder="Tulis ucapan & doa..." required maxlength="300"></textarea>
+        <button type="submit" class="comment-submit" id="c-submit">Kirim</button>
+      </form>
+
+      <div class="comment-list" id="comment-list">
+        <div class="comment-empty">Memuat ucapan...</div>
+      </div>
+    </div>
+  </section>
+
   <footer id="footer"></footer>
 </div>
 
@@ -465,6 +517,61 @@
     else{audio.pause();musicToggle.classList.add('muted')}
   });
   document.body.style.overflow='hidden';
+</script>
+
+<!-- ==== UCAPAN & DOA (Firebase Realtime Database) ==== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, push, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const app = initializeApp(CONFIG.firebaseConfig);
+  const db = getDatabase(app);
+  const commentsRef = ref(db, 'comments');
+
+  const form = document.getElementById('comment-form');
+  const submitBtn = document.getElementById('c-submit');
+  const list = document.getElementById('comment-list');
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('c-name').value.trim();
+    const status = document.getElementById('c-status').value;
+    const message = document.getElementById('c-message').value.trim();
+    if (!name || !message) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Mengirim...';
+
+    push(commentsRef, { name, status, message, timestamp: Date.now() })
+      .then(() => {
+        form.reset();
+        submitBtn.textContent = 'Terkirim ✓';
+        setTimeout(() => { submitBtn.textContent = 'Kirim'; submitBtn.disabled = false; }, 1500);
+      })
+      .catch(() => {
+        submitBtn.textContent = 'Gagal, coba lagi';
+        submitBtn.disabled = false;
+      });
+  });
+
+  const recentComments = query(commentsRef, limitToLast(100));
+  onValue(recentComments, (snapshot) => {
+    const data = snapshot.val();
+    if (!data) { list.innerHTML = '<div class="comment-empty">Jadi yang pertama kirim ucapan!</div>'; return; }
+
+    const items = Object.values(data).sort((a, b) => b.timestamp - a.timestamp);
+    list.innerHTML = items.map(item => `
+      <div class="comment-item">
+        <span class="c-name">${escapeHtml(item.name)}</span>
+        <span class="c-status">• ${escapeHtml(item.status || '')}</span>
+        <div class="c-msg">${escapeHtml(item.message)}</div>
+      </div>
+    `).join('');
+  });
 </script>
 
 </body>
